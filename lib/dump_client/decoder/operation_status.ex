@@ -1,5 +1,5 @@
 defmodule DumpClient.Decoder.OperationStatus do
-  def decode(message) do
+  def decode(_) do
     %Message.OperationStatus{}
   end
 end

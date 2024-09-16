@@ -11,11 +11,11 @@ defmodule DumpClient.Decoder.AircraftIdentification do
     }
   end
 
-  defp decode_wake_vortex_category(type_code, category) when type_code == 1 do
+  defp decode_wake_vortex_category(type_code, _) when type_code == 1 do
     "Reserved"
   end
 
-  defp decode_wake_vortex_category(type_code, category) when category == 0 do
+  defp decode_wake_vortex_category(_, category) when category == 0 do
     "No category information"
   end
 

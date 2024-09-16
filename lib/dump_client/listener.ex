@@ -3,8 +3,8 @@ defmodule DumpClient.Listener do
   # creates a new process, and then idles indefinitely. Possibly needs to be more sophisticated in the future?
   use GenServer
 
-  def start(aircraft_handler) do
-    GenServer.start(__MODULE__, aircraft_handler)
+  def start(callback) do
+    GenServer.start(__MODULE__, callback)
   end
 
   def listen(listener) do
@@ -12,32 +12,32 @@ defmodule DumpClient.Listener do
   end
 
   @impl GenServer
-  def init(aircraft_handler) do
+  def init(callback) do
     # TODO setup socket and listener in handle_continue
     {:ok, message_handler} = DumpClient.MessageDecoder.start()
 
     {:ok, socket} =
       :gen_tcp.connect({192, 168, 1, 121}, 30002, [:binary, :inet, active: false, packet: :line])
 
-    {:ok, {socket, message_handler, aircraft_handler}}
+    {:ok, {socket, message_handler, callback}}
   end
 
   @impl GenServer
-  def handle_cast({:listen}, {socket, message_handler, aircraft_handler}) do
-    spawn(fn -> handle_socket_messages(socket, message_handler, aircraft_handler) end)
+  def handle_cast({:listen}, {socket, message_handler, callback}) do
+    spawn(fn -> handle_socket_messages(socket, message_handler, callback) end)
 
-    {:noreply, {socket, message_handler}}
+    {:noreply, {socket, message_handler, callback}}
   end
 
-  defp handle_socket_messages(socket, message_handler, aircraft_handler) do
+  defp handle_socket_messages(socket, message_handler, callback) do
     {:ok, message} = :gen_tcp.recv(socket, 0)
 
     decoded = DumpClient.MessageDecoder.decode_message(message_handler, message)
 
     if decoded != nil do
-      AircraftHandler.handle_message(aircraft_handler, decoded)
+      callback.(decoded)
     end
 
-    handle_socket_messages(socket, message_handler, aircraft_handler)
+    handle_socket_messages(socket, message_handler, callback)
   end
 end

@@ -83,8 +83,8 @@ defmodule DumpClient.Decoder.AirborneVelocity do
 
   defp decode_airspeed(sub_type, message) do
     # An airspeed message only is sent in the event that position cannot be determined by GNSS so sub-type 3 and 4 are rare.
-    <<status_mag_heading::size(1), mag_heading::size(10), airspeed_type_flag::size(1),
-      airspeed::size(10)>> = <<message::22>>
+    <<_::size(1), mag_heading::size(10), airspeed_type_flag::size(1), airspeed::size(10)>> =
+      <<message::22>>
 
     # degrees
     mag_heading = mag_heading * (360 / 1024)

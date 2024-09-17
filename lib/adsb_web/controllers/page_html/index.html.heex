@@ -1,0 +1,26 @@
+<.flash_group flash={@flash} />
+
+<h1>Live Aircraft</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>ICAO</th>
+      <th>Callsign</th>
+      <th>Altitude</th>
+      <th>Latitude</th>
+      <th>Longitude</th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for ac <- Map.values(@aircraft) do %>
+      <tr>
+        <td><%= ac.icao || "" %></td>
+        <td><%= ac.callsign || "" %></td>
+        <td><%= ac.altitude || "" %></td>
+        <td><%= ac.latitude || "" %></td>
+        <td><%= ac.longitude || "" %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
